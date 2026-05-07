@@ -1,0 +1,152 @@
+ 
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora TDD</title>
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: #1e1e1e;
+            margin: 0;
+        }
+        .calculadora {
+            background: #2d2d2d;
+            padding: 20px;
+            border-radius: 16px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+        }
+        .pantalla {
+            width: 260px;
+            height: 50px;
+            background: #c8e6c9;
+            font-size: 2em;
+            text-align: right;
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            overflow-x: auto;
+            color: #1b5e20;
+            font-weight: bold;
+        }
+        .botones {
+            display: grid;
+            grid-template-columns: repeat(4, 60px);
+            gap: 8px;
+        }
+        button {
+            height: 60px;
+            font-size: 1.5em;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.2s;
+            font-weight: bold;
+        }
+        .numero { background: #424242; color: white; }
+        .numero:hover { background: #616161; }
+        .operacion { background: #ff9800; color: white; }
+        .operacion:hover { background: #ffb74d; }
+        .igual { background: #4caf50; color: white; grid-column: span 2; }
+        .igual:hover { background: #66bb6a; }
+        .limpiar { background: #f44336; color: white; grid-column: span 2; }
+        .limpiar:hover { background: #ef5350; }
+    </style>
+</head>
+<body>
+    <div class="calculadora">
+        <div class="pantalla" id="pantalla">{{ resultado if resultado is not none else "0" }}</div>
+        <form method="post" id="form-calc">
+            <input type="hidden" name="a" id="input-a">
+            <input type="hidden" name="b" id="input-b">
+            <input type="hidden" name="operacion" id="input-op">
+            <div class="botones">
+                <button type="button" class="numero" onclick="agregarNumero('7')">7</button>
+                <button type="button" class="numero" onclick="agregarNumero('8')">8</button>
+                <button type="button" class="numero" onclick="agregarNumero('9')">9</button>
+                <button type="button" class="operacion" onclick="agregarOperacion('/')">/</button>
+
+                <button type="button" class="numero" onclick="agregarNumero('4')">4</button>
+                <button type="button" class="numero" onclick="agregarNumero('5')">5</button>
+                <button type="button" class="numero" onclick="agregarNumero('6')">6</button>
+                <button type="button" class="operacion" onclick="agregarOperacion('*')">*</button>
+
+                <button type="button" class="numero" onclick="agregarNumero('1')">1</button>
+                <button type="button" class="numero" onclick="agregarNumero('2')">2</button>
+                <button type="button" class="numero" onclick="agregarNumero('3')">3</button>
+                <button type="button" class="operacion" onclick="agregarOperacion('-')">-</button>
+
+                <button type="button" class="numero" onclick="agregarNumero('0')">0</button>
+                <button type="button" class="numero" onclick="agregarNumero('.')">.</button>
+                <button type="button" class="limpiar" onclick="limpiar()">C</button>
+                <button type="button" class="operacion" onclick="agregarOperacion('+')">+</button>
+
+                <button type="submit" class="igual">=</button>
+            </div>
+        </form>
+    </div>
+    <script>
+        let primerNumero = "";
+        let segundoNumero = "";
+        let operacion = "";
+        let turnoActual = 1; // 1: primer número, 2: segundo número
+
+        function agregarNumero(num) {
+            if (turnoActual === 1) {
+                primerNumero += num;
+                actualizarPantalla(primerNumero);
+            } else {
+                segundoNumero += num;
+                actualizarPantalla(primerNumero + " " + operacion + " " + segundoNumero);
+            }
+        }
+
+        function agregarOperacion(op) {
+            if (primerNumero !== "" && turnoActual === 1) {
+                operacion = op;
+                turnoActual = 2;
+                actualizarPantalla(primerNumero + " " + operacion + " ");
+            }
+        }
+
+        function limpiar() {
+            primerNumero = "";
+            segundoNumero = "";
+            operacion = "";
+            turnoActual = 1;
+            actualizarPantalla("0");
+        }
+
+        function actualizarPantalla(texto) {
+            document.getElementById("pantalla").textContent = texto;
+        }
+
+        // Al enviar el formulario, colocar los valores en los campos ocultos
+        document.getElementById("form-calc").addEventListener("submit", function(e) {
+            // Si solo hay un número y operación, pero falta el segundo, no enviar
+            if (primerNumero === "" || operacion === "" || segundoNumero === "") {
+                e.preventDefault();
+                alert("Completa la operación: número, operación y segundo número.");
+                return;
+            }
+            document.getElementById("input-a").value = primerNumero;
+            document.getElementById("input-b").value = segundoNumero;
+            document.getElementById("input-op").value = operacion;
+
+            // Mapear símbolos a nombres de función
+            const mapaOp = {
+                '+': 'suma',
+                '-': 'resta',
+                '*': 'multiplicacion',
+                '/': 'division'
+            };
+            document.getElementById("input-op").value = mapaOp[operacion] || operacion;
+        });
+    </script>
+</body>
+</html>
