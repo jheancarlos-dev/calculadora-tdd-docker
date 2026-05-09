@@ -26,3 +26,8 @@ def test_division_por_cero():
         
 def test_suma_negativos():
     assert suma(-2, -3) == -5
+
+from calculadora import potencia
+
+def test_potencia_positivos():
+    assert potencia(2, 3) == 8
