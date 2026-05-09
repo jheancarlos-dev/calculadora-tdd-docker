@@ -23,3 +23,6 @@ import pytest
 def test_division_por_cero():
     with pytest.raises(ValueError, match="No se puede dividir por cero"):
         division(5, 0)
+        
+def test_suma_negativos():
+    assert suma(-2, -3) == -5
